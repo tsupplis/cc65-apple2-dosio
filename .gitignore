@@ -1,0 +1,10 @@
+.D*
+*.log
+*.cfg
+*.cmd
+.*.swp
+*.obj
+*.img
+*.sym
+*.lst
+.vscode
