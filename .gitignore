@@ -10,4 +10,5 @@
 *.map
 *.lst
 images/**
+acmd.jar
 .vscode

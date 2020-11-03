@@ -11,7 +11,10 @@ LDAS=ld65
 CFLAGS=-Os -t $(APPLE_TYPE) 
 LDFLAGS=-t $(APPLE_TYPE) 
 
-all: dosprog.dsk blank.dsk
+all: test.bin
+
+
+disks: dosprog.dsk blank.dsk
 
 blank.dsk: 
 	$(ACMD) -dos140 blank.dsk
