@@ -3,9 +3,11 @@
 *.cfg
 *.cmd
 .*.swp
-*.obj
-*.img
+*.o
+*.bin
+*.dsk
 *.sym
+*.map
 *.lst
 images/**
 .vscode
