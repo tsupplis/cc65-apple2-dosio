@@ -7,4 +7,5 @@
 *.img
 *.sym
 *.lst
+images/**
 .vscode
