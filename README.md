@@ -4,14 +4,15 @@
 
 apple2-dosio is an experimental Apple 2 DOS 3.3 file access library. It closes a functional gap compared to ProDOS support in the CC65 Standard Library. It uses the DOS 3.3 File Manager API internally. We could imagine creating a specific implementation of the standard c library but for size and simplicity sake, it is its own API.
 
-The Reference used is [Beneath Apple DOS](https://mirrors.apple2.org.za/Apple%20II%20Documentation%20Project/Books/Beneath%20Apple%20DOS.pdf) , File Manager Section pp 6.7-6.17.
+The Reference used is [Beneath Apple DOS](https://mirrors.apple2.org.za/Apple%20II%20Documentation%20Project/Books/Beneath%20Apple%20DOS.pdf), File Manager Section pp 6.7-6.17.
 
 Most of the calls are usable, with a limitation of the catalog function that displays content rather than giving access to the directory content.
 
+Also, the code is fairly lean but no strong optimisation has been attempted. 
 
 ## API
 
-Further documentation will be provided but examples of usage can be found in test*.c files for the time being.
+Further documentation will be provided but examples of usage can be found in test*.c files for the time being. The API reflects as closely as possible the File Manager API ([Beneath Apple DOS](https://mirrors.apple2.org.za/Apple%20II%20Documentation%20Project/Books/Beneath%20Apple%20DOS.pdf) , File Manager Section pp 6.7-6.17). 
 
 ```
 #define DOS_FILE_TYPE_TEXT 0x00
