@@ -78,4 +78,4 @@ int dos_position(dos_buffer_t *buffer, unsigned int record,
 - [DOS 3.3](https://mirrors.apple2.org.za/ftp.apple.asimov.net/images/masters/) (1980/08, 1983/01, 1983/08 ...) 
 - [ProntoDOS](https://mirrors.apple2.org.za/ftp.apple.asimov.net/images/masters/3rd_party_dos/) (1984/08)
 - [DiversiDOS](https://mirrors.apple2.org.za/ftp.apple.asimov.net/images/masters/3rd_party_dos/) (4.1c)
-- [DOS 3.4 (2018/01)](https://brutaldeluxe.fr/projects/dos34/index.html)
+- [DOS 3.4](https://brutaldeluxe.fr/projects/dos34/index.html) (2018/01)
