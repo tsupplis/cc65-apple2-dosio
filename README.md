@@ -34,3 +34,9 @@ int dos_position(dos_buffer_t *buffer, unsigned int record, unsigned int offset)
 - AppleCommander 1.6.0
 - DOS 3.3 Image Files
 - A DOS Emulator for testing
+
+# Versions of DOS tested against
+
+- DOS 3.3 (All versions)
+- ProntoDOS 1984
+- DOS 3.4 (https://brutaldeluxe.fr/projects/dos34/index.html)
