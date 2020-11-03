@@ -4,7 +4,7 @@
 
 apple2-dosio is an experimental Apple 2 DOS 3.3 file access library. It closes a functional gap of the CC65 Standard Library. It uses the DOS 3.3 File Manager API internally.
 
-The Reference used is 'Beneath Apple DOS' (https://mirrors.apple2.org.za/Apple%20II%20Documentation%20Project/Books/Beneath%20Apple%20DOS.pdf, File Manager Section, pp 6.7-6.17)
+The Reference used is [Beneath Apple DOS](https://mirrors.apple2.org.za/Apple%20II%20Documentation%20Project/Books/Beneath%20Apple%20DOS.pdf) , File Manager Section pp 6.7-6.17)
 
 Most of the calls are usable, with a limitation of the catalog function that displays content rather than giving access to the directory content.
 
@@ -68,14 +68,14 @@ int dos_position(dos_buffer_t *buffer, unsigned int record,
 
 ## Dependencies
 
-- CC65 C Compiler https://github.com/cc65/cc65
-- AppleCommander 1.6.0 https://github.com/AppleCommander/AppleCommander
+- [CC65 C Compiler](https://github.com/cc65/cc65)
+- [AppleCommander 1.6.0](https://github.com/AppleCommander/AppleCommander)
 - DOS 3.3 Image Files (or compatible)
-- A DOS Emulator for testing (e.g. https://www.virtualii.com on Mac)
+- A DOS Emulator for testing (e.g. [Virtual II](https://www.virtualii.com) on Mac)
 
 ## Versions of DOS tested against
 
 - DOS 3.3 (1983/01, 1983/08)
 - ProntoDOS (1984/08)
 - DiversiDOS (4.1c)
-- DOS 3.4 (2018/01 https://brutaldeluxe.fr/projects/dos34/index.html)
+- [DOS 3.4 (2018/01)](https://brutaldeluxe.fr/projects/dos34/index.html)
