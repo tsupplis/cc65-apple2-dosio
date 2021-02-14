@@ -26,6 +26,7 @@ dosprog.dsk: test.bin \
 	cp $(DOS_VERSION).dsk dosprog.dsk
 	$(ACMD) -as dosprog.dsk BOOT B < test.bin
 	$(ACMD) -as dosprog.dsk TEST B < test.bin
+	$(ACMD) -u dosprog.dsk TEST
 	$(ACMD) -bas dosprog.dsk SAMPLE < sample.bas
 	$(ACMD) -bas dosprog.dsk TEXTIO < textio.bas
 	$(ACMD) -pt dosprog.dsk TEXT < sample.txt

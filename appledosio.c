@@ -166,6 +166,7 @@ char dos_catalog(char slot, char drive, unsigned char volume)
 {
     fm_pcb_t *pcb = dos_pcb();
 
+    dos_buffer_reset(_dos_buffer);
     fm_pcb_call_type(pcb) = DOS_CALL_CATALOG;
     fm_pcb_slot(pcb) = default_slot(slot);
     fm_pcb_drive(pcb) = default_drive(drive);
