@@ -43,6 +43,8 @@ void test1(void)
     printf("WRITE_POS RC=%X\n", rc);
     rc = dos_close(buf);
     printf("CLOSE RC=%X\n", rc);
+    rc = dos_catalog(7, 2, 2);
+    printf("CATALOG RC=%X\n", rc);
     rc = dos_catalog(slot, drive, 0);
     printf("CATALOG RC=%X\n", rc);
     printf("Test 1 Completed ... \nPress a Key to Continue ...\n");
