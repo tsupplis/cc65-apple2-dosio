@@ -16,5 +16,6 @@ void test0(void)
         printf("Last Current Slot: %d\n",dos_last_slot());
         printf("Last Current Drive: %d\n",dos_last_drive());
     }
+    printf("Test 0 Completed ... \nPress a Key to Continue ...\n");
     cgetc();
 }

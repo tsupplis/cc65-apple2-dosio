@@ -10,10 +10,10 @@ void test3(void)
 {
     dos_buffer_t *buf;
     char hello[] = {0x0f, 0x00, 0x0e, 0x08, 0x0a, 0x00, 0xba, 0x22, 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x22, 0x00, 0x00, 0x00, 0xa2};
-    char slot = 6;
-    char drive = 2;
+    char slot = DOS_DEFAULT_SLOT;
+    char drive = DOS_DEFAULT_DRIVE;
     int i = 0;
-    int rc = 0;
+    char rc = 0;
 
     clrscr();
     printf("--------> Test 3\n");
@@ -43,7 +43,8 @@ void test3(void)
     printf("CLOSE RC=%X\n", rc);
     rc = dos_rename(slot, drive, 0, "TESTX", "TEST3");
     printf("RENAME RC=%X\n", rc);
-    rc = dos_catalog(6, 2, 0);
+    rc = dos_catalog(slot, drive, 0);
     printf("CATALOG RC=%X\n", rc);
+    printf("Test 3 Completed ... \nPress a Key to Continue ...\n");
     cgetc();
 }

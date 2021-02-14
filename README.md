@@ -51,6 +51,8 @@ typedef struct _dos_buffer_t { ... } dos_buffer_t;
 
 dos_buffer_t *dos_get_buffer(void);
 
+char dos_default_slot();
+char dos_default_drive();
 char dos_last_slot();
 char dos_last_drive();
 char dos_check(void);

@@ -1,4 +1,5 @@
-DOS_VERSION=images/dos34_2018_01
+DOS_VERSION=dos
+#DOS_VERSION=images/dos34_2018_01
 #DOS_VERSION=images/dos33_1983_08
 #DOS_VERSION=images/diversidos_4.1c
 #DOS_VERSION=images/prontodos_1984_08
@@ -44,4 +45,4 @@ test3.o: test3.c appledosio.h
 appledosio.o: appledosio.c appledosio.h
 
 clean:
-	rm -f *.system *.bin *.prg *.o *.map *.dsk *.[1-9]
+	rm -f *.system *.bin *.prg *.o *.map blank.dsk dosprog.dsk *.[1-9]

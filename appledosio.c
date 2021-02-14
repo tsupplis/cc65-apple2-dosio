@@ -80,12 +80,12 @@ typedef struct _fm_pcb_t
     } while (0)
 
 static dos_buffer_t _dos_buffer[1];
-static char _default_drive=-1;
-static char _default_slot=-1;
+static char _default_drive=0;
+static char _default_slot=0;
 
 char default_slot(char slot) {
     if(slot<1) {
-        if(_default_slot=-1) {
+        if(!_default_slot) {
             _default_slot=PEEK(0xB7F7)/16;
         }
         return _default_slot;
@@ -98,7 +98,7 @@ char default_slot(char slot) {
 
 char default_drive(char drive) {
     if(drive<1) {
-        if(_default_drive=-1) {
+        if(!_default_drive) {
             _default_drive=PEEK(0xB7F8);
         }
         return _default_drive;
@@ -248,8 +248,8 @@ char dos_rename(char slot, char drive, unsigned char volume, char *file, char *n
     fm_pcb_t *pcb = dos_pcb();
     dos_buffer_reset(_dos_buffer);
     fm_pcb_call_type(pcb) = DOS_CALL_RENAME;
-    fm_pcb_slot(pcb) = slot;
-    fm_pcb_drive(pcb) = drive;
+    fm_pcb_slot(pcb) = default_slot(slot);
+    fm_pcb_drive(pcb) = default_drive(drive);
     fm_pcb_volume(pcb) = volume;
     fm_pcb_file_name(pcb) = _dos_buffer->file_name;
     fm_pcb_new_name(pcb) = _dos_rename_name;
@@ -452,4 +452,12 @@ char dos_last_slot() {
 
 char dos_last_drive() {
     return PEEK(0xB7F8);
+}
+
+char dos_default_slot() {
+    return default_slot(0);
+}
+
+char dos_default_drive() {
+    return default_drive(0);
 }

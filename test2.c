@@ -10,10 +10,10 @@ void test2(void)
 {
     dos_buffer_t *buf;
     char content[5];
-    char slot = 6;
-    char drive = 2;
+    char slot = DOS_DEFAULT_SLOT;
+    char drive = DOS_DEFAULT_DRIVE;
     int i = 0;
-    int rc = 0;
+    char rc = 0;
 
     clrscr();
     printf("--------> Test 2\n");
@@ -39,7 +39,8 @@ void test2(void)
     printf("VERIFY RC=%X\n", rc);
     rc = dos_lock(slot, drive, 0, "TEST2");
     printf("LOCK RC=%X\n", rc);
-    rc = dos_catalog(6, 2, 0);
+    rc = dos_catalog(slot, drive, 0);
     printf("CATALOG RC=%X\n", rc);
+    printf("Test 2 Completed ... \nPress a Key to Continue ...\n");
     cgetc();
 }
