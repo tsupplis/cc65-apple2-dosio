@@ -50,17 +50,20 @@ typedef struct _dos_buffer_t
     } while (0)
 dos_buffer_t *dos_get_buffer(void);
 
+char dos_last_slot();
+char dos_last_drive();
 int dos_check(void);
 int dos_version(void);
-int dos_catalog(char slot, char drive);
-int dos_open(dos_buffer_t *buffer, char slot, char drive, char *file, char type, unsigned int record_size, char creat);
+int dos_catalog(char slot, char drive, unsigned char volume);
+int dos_open(dos_buffer_t *buffer, char slot, char drive, unsigned char volume, char *file, 
+    char type, unsigned int record_size, char creat);
 int dos_close(dos_buffer_t *buffer);
-int dos_delete(char slot, char drive, char *file);
-int dos_rename(char slot, char drive, char *file, char *new_name);
-int dos_lock(char slot, char drive, char *file);
-int dos_unlock(char slot, char drive, char *file);
-int dos_verify(char slot, char drive, char *file);
-int dos_init(char slot, char drive, char volume);
+int dos_delete(char slot, char drive, unsigned char volume, char *file);
+int dos_rename(char slot, char drive, unsigned char volume, char *file, char *new_name);
+int dos_lock(char slot, char drive, unsigned char volume, char *file);
+int dos_unlock(char slot, char drive, unsigned char volume, char *file);
+int dos_verify(char slot, char drive, unsigned char volume, char *file);
+int dos_init(char slot, char drive, unsigned char volume);
 int dos_write_byte(dos_buffer_t *buffer, char b);
 int dos_read_byte(dos_buffer_t *buffer, char *b);
 int dos_write(dos_buffer_t *buffer, char *b, unsigned int length);

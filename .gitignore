@@ -9,6 +9,7 @@
 *.sym
 *.map
 *.lst
+images
 images/**
 acmd.jar
 .vscode

@@ -3,6 +3,7 @@
 #include <conio.h>
 #include <string.h>
 #include <apple2.h>
+#include <peekpoke.h>
 #include "appledosio.h"
 #include "dump.h"
 
@@ -79,6 +80,34 @@ typedef struct _fm_pcb_t
     } while (0)
 
 static dos_buffer_t _dos_buffer[1];
+static char _default_drive=-1;
+static char _default_slot=-1;
+
+char default_slot(char slot) {
+    if(slot<1) {
+        if(_default_slot=-1) {
+            _default_slot=PEEK(47095)/16;
+        }
+        return _default_slot;
+    } 
+    if(slot>7) {
+        return 7;
+    }
+    return slot;
+}
+
+char default_drive(char drive) {
+    if(drive<1) {
+        if(_default_drive=-1) {
+            _default_drive=PEEK(47096);
+        }
+        return _default_drive;
+    } 
+    if(drive>2) {
+        return 2;
+    }
+    return drive;
+}
 
 int dos_check(void)
 {
@@ -114,13 +143,14 @@ static fm_pcb_t *dos_pcb()
     return (fm_pcb_t *)(((_pcb_a << 8) & 0xFF00) + (_pcb_y));
 }
 
-int dos_catalog(char slot, char drive)
+int dos_catalog(char slot, char drive, unsigned char volume)
 {
     fm_pcb_t *pcb = dos_pcb();
 
     fm_pcb_call_type(pcb) = DOS_CALL_CATALOG;
-    fm_pcb_drive(pcb) = drive;
-    fm_pcb_slot(pcb) = slot;
+    fm_pcb_slot(pcb) = default_slot(slot);
+    fm_pcb_drive(pcb) = default_drive(drive);
+    fm_pcb_volume(pcb) = volume;
     fm_pcb_work_area(pcb) = _dos_buffer->work_area;
     __asm__("jsr $3D6");
     return fm_pcb_return_code(pcb);
@@ -159,14 +189,15 @@ static void _dos_copy_file_name(char *a, char *b)
     }
 }
 
-int dos_open(dos_buffer_t *buffer, char slot, char drive, char *file, char type, unsigned int record_size, char creat)
+int dos_open(dos_buffer_t *buffer, char slot, char drive, unsigned char volume, 
+    char *file, char type, unsigned int record_size, char creat)
 {
     fm_pcb_t *pcb = dos_pcb();
     fm_pcb_call_type(pcb) = DOS_CALL_OPEN;
     fm_pcb_record_size(pcb) = record_size;
-    fm_pcb_volume(pcb) = 0;
-    fm_pcb_drive(pcb) = drive;
-    fm_pcb_slot(pcb) = slot;
+    fm_pcb_slot(pcb) = default_slot(slot);
+    fm_pcb_drive(pcb) = default_drive(drive);
+    fm_pcb_volume(pcb) = volume;
     fm_pcb_type(pcb) = type;
     fm_pcb_file_name(pcb) = buffer->file_name;
     fm_pcb_map_buffers(pcb, buffer);
@@ -183,14 +214,14 @@ int dos_open(dos_buffer_t *buffer, char slot, char drive, char *file, char type,
     return fm_pcb_return_code(pcb);
 }
 
-int dos_delete(char slot, char drive, char *file)
+int dos_delete(char slot, char drive, unsigned char volume, char *file)
 {
     fm_pcb_t *pcb = dos_pcb();
     dos_buffer_reset(_dos_buffer);
     fm_pcb_call_type(pcb) = DOS_CALL_DELETE;
-    fm_pcb_volume(pcb) = 0;
-    fm_pcb_drive(pcb) = drive;
-    fm_pcb_slot(pcb) = slot;
+    fm_pcb_slot(pcb) = default_slot(slot);
+    fm_pcb_drive(pcb) = default_drive(drive);
+    fm_pcb_volume(pcb) = volume;
     fm_pcb_file_name(pcb) = _dos_buffer->file_name;
     fm_pcb_map_buffers(pcb, _dos_buffer);
     _dos_copy_file_name(_dos_buffer->file_name, file);
@@ -200,14 +231,14 @@ int dos_delete(char slot, char drive, char *file)
 
 static char _dos_rename_name[30];
 
-int dos_rename(char slot, char drive, char *file, char *new_name)
+int dos_rename(char slot, char drive, unsigned char volume, char *file, char *new_name)
 {
     fm_pcb_t *pcb = dos_pcb();
     dos_buffer_reset(_dos_buffer);
     fm_pcb_call_type(pcb) = DOS_CALL_RENAME;
-    fm_pcb_volume(pcb) = 0;
-    fm_pcb_drive(pcb) = drive;
     fm_pcb_slot(pcb) = slot;
+    fm_pcb_drive(pcb) = drive;
+    fm_pcb_volume(pcb) = volume;
     fm_pcb_file_name(pcb) = _dos_buffer->file_name;
     fm_pcb_new_name(pcb) = _dos_rename_name;
     fm_pcb_map_buffers(pcb, _dos_buffer);
@@ -217,14 +248,14 @@ int dos_rename(char slot, char drive, char *file, char *new_name)
     return fm_pcb_return_code(pcb);
 }
 
-int dos_lock(char slot, char drive, char *file)
+int dos_lock(char slot, char drive, unsigned char volume, char *file)
 {
     fm_pcb_t *pcb = dos_pcb();
     dos_buffer_reset(_dos_buffer);
     fm_pcb_call_type(pcb) = DOS_CALL_LOCK;
-    fm_pcb_volume(pcb) = 0;
-    fm_pcb_drive(pcb) = drive;
-    fm_pcb_slot(pcb) = slot;
+    fm_pcb_slot(pcb) = default_slot(slot);
+    fm_pcb_drive(pcb) = default_drive(drive);
+    fm_pcb_volume(pcb) = volume;
     fm_pcb_file_name(pcb) = _dos_buffer->file_name;
     fm_pcb_map_buffers(pcb, _dos_buffer);
     _dos_copy_file_name(_dos_buffer->file_name, file);
@@ -232,14 +263,14 @@ int dos_lock(char slot, char drive, char *file)
     return fm_pcb_return_code(pcb);
 }
 
-int dos_unlock(char slot, char drive, char *file)
+int dos_unlock(char slot, char drive, unsigned char volume, char *file)
 {
     fm_pcb_t *pcb = dos_pcb();
     dos_buffer_reset(_dos_buffer);
     fm_pcb_call_type(pcb) = DOS_CALL_UNLOCK;
-    fm_pcb_volume(pcb) = 0;
-    fm_pcb_drive(pcb) = drive;
-    fm_pcb_slot(pcb) = slot;
+    fm_pcb_slot(pcb) = default_slot(slot);
+    fm_pcb_drive(pcb) = default_drive(drive);
+    fm_pcb_volume(pcb) = volume;
     fm_pcb_file_name(pcb) = _dos_buffer->file_name;
     fm_pcb_map_buffers(pcb, _dos_buffer);
     _dos_copy_file_name(_dos_buffer->file_name, file);
@@ -247,14 +278,14 @@ int dos_unlock(char slot, char drive, char *file)
     return fm_pcb_return_code(pcb);
 }
 
-int dos_verify(char slot, char drive, char *file)
+int dos_verify(char slot, char drive, unsigned char volume, char *file)
 {
     fm_pcb_t *pcb = dos_pcb();
     dos_buffer_reset(_dos_buffer);
     fm_pcb_call_type(pcb) = DOS_CALL_VERIFY;
-    fm_pcb_volume(pcb) = 0;
-    fm_pcb_drive(pcb) = drive;
-    fm_pcb_slot(pcb) = slot;
+    fm_pcb_slot(pcb) = default_slot(slot);
+    fm_pcb_drive(pcb) = default_drive(drive);
+    fm_pcb_volume(pcb) = volume;
     fm_pcb_file_name(pcb) = _dos_buffer->file_name;
     fm_pcb_map_buffers(pcb, _dos_buffer);
     _dos_copy_file_name(_dos_buffer->file_name, file);
@@ -262,15 +293,15 @@ int dos_verify(char slot, char drive, char *file)
     return fm_pcb_return_code(pcb);
 }
 
-int dos_init(char slot, char drive, char volume)
+int dos_init(char slot, char drive, unsigned char volume)
 {
     char **fn = (char **)((((char *)0x3D2)[0] << 8) + 6);
     fm_pcb_t *pcb = dos_pcb();
     fm_pcb_call_type(pcb) = DOS_CALL_INIT;
     fm_pcb_subcall_type(pcb) = ((char *)0x3D2)[0];
+    fm_pcb_slot(pcb) = default_slot(slot);
+    fm_pcb_drive(pcb) = default_drive(drive);
     fm_pcb_volume(pcb) = volume;
-    fm_pcb_drive(pcb) = drive;
-    fm_pcb_slot(pcb) = slot;
     _dos_copy_file_name(*fn, "HELLO");
     fm_pcb_work_area(pcb) = _dos_buffer->work_area;
     __asm__("jsr $3D6");
@@ -399,4 +430,12 @@ dos_buffer_t *dos_get_buffer(void)
         return buf;
     }
     return 0;
+}
+
+char dos_last_slot() {
+    return PEEK(47095)/16;
+}
+
+char dos_last_drive() {
+    return PEEK(47096);
 }

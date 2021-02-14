@@ -1,7 +1,7 @@
-#DOS_VERSION=images/dos34_2018_01
+DOS_VERSION=images/dos34_2018_01
 #DOS_VERSION=images/dos33_1983_08
 #DOS_VERSION=images/diversidos_4.1c
-DOS_VERSION=images/prontodos_1984_08
+#DOS_VERSION=images/prontodos_1984_08
 APPLE_TYPE=apple2
 CC=cl65
 AS=ca65
@@ -11,7 +11,7 @@ LDAS=ld65
 CFLAGS=-Os -t $(APPLE_TYPE) 
 LDFLAGS=-t $(APPLE_TYPE) 
 
-all: test.bin
+all: test.bin disks
 
 
 disks: dosprog.dsk blank.dsk
@@ -30,12 +30,13 @@ dosprog.dsk: test.bin \
 	$(ACMD) -pt dosprog.dsk TEXT < sample.txt
 	$(ACMD) -l dosprog.dsk
 
-test.bin: test.o test1.o test2.o test3.o appledosio.o dump.o
+test.bin: test.o test0.o test1.o test2.o test3.o appledosio.o dump.o
 	$(LD) -o $@ -m $@.map $^ $(LDFLAGS)
 
 dump.o: dump.c
 
 test.o: test.c appledosio.h
+test0.o: test0.c appledosio.h
 test1.o: test1.c appledosio.h
 test2.o: test2.c appledosio.h
 test3.o: test3.c appledosio.h

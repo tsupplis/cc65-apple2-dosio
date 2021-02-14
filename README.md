@@ -39,22 +39,28 @@ Further documentation will be provided but examples of usage can be found in tes
 #define DOS_ERR_DISK_FULL 0x09
 #define DOS_ERR_FILE_LOCKED 0x0A
 
+#define DOS_DEFAULT_SLOT 0
+#define DOS_DEFAULT_DRIVE 0
+#define DOS_DEFAULT_VOLUME 0
+
 typedef struct _dos_buffer_t { ... } dos_buffer_t;
 
 dos_buffer_t *dos_get_buffer(void);
 
+char dos_last_drive();
+char dos_last_slot();
 int dos_check(void);
 int dos_version(void);
-int dos_catalog(char slot, char drive);
-int dos_open(dos_buffer_t *buffer, char slot, char drive, char *file, 
+int dos_catalog(char slot, char drive, char volume);
+int dos_open(dos_buffer_t *buffer, char slot, char drive, unsigned char volume, char *file, 
     char type, unsigned int record_size, char creat);
 int dos_close(dos_buffer_t *buffer);
-int dos_delete(char slot, char drive, char *file);
-int dos_rename(char slot, char drive, char *file, char *new_name);
-int dos_lock(char slot, char drive, char *file);
-int dos_unlock(char slot, char drive, char *file);
-int dos_verify(char slot, char drive, char *file);
-int dos_init(char slot, char drive, char volume);
+int dos_delete(char slot, char drive, unsigned char volume, char *file);
+int dos_rename(char slot, char drive, unsigned char volume, char *file, char *new_name);
+int dos_lock(char slot, char drive, unsigned char volume, char *file);
+int dos_unlock(char slot, char drive, unsigned char volume, char *file);
+int dos_verify(char slot, char drive, unsigned char volume, char *file);
+int dos_init(char slot, char drive, unsigned char volume, char volume);
 int dos_write_byte(dos_buffer_t *buffer, char b);
 int dos_read_byte(dos_buffer_t *buffer, char *b);
 int dos_write(dos_buffer_t *buffer, char *b, unsigned int length);

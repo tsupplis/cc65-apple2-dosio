@@ -19,13 +19,13 @@ void test3(void)
     printf("--------> Test 3\n");
     buf = dos_get_buffer();
     printf("BUFFER=%p\n", buf);
-    rc = dos_open(buf, slot, drive, "DELETED", DOS_FILE_TYPE_TEXT, 0, DOS_OPEN_CREATE);
+    rc = dos_open(buf, slot, drive, 0, "DELETED", DOS_FILE_TYPE_TEXT, 0, DOS_OPEN_CREATE);
     printf("OPEN RC=%X\n", rc);
     rc = dos_close(buf);
     printf("CLOSE RC=%X\n", rc);
-    rc = dos_delete(slot, drive, "DELETED");
+    rc = dos_delete(slot, drive, 0, "DELETED");
     printf("DELETE RC=%X\n", rc);
-    rc = dos_open(buf, slot, drive, "TESTX", DOS_FILE_TYPE_TEXT, 0, DOS_OPEN_CREATE);
+    rc = dos_open(buf, slot, drive, 0, "TESTX", DOS_FILE_TYPE_TEXT, 0, DOS_OPEN_CREATE);
     printf("OPEN RC=%X\n", rc);
     rc = dos_position(buf, 0, 0);
     printf("POSITION RC=%X\n", rc);
@@ -41,9 +41,9 @@ void test3(void)
     printf("WRITE(BI) RC=%X\n", rc);
     rc = dos_close(buf);
     printf("CLOSE RC=%X\n", rc);
-    rc = dos_rename(slot, drive, "TESTX", "TEST3");
+    rc = dos_rename(slot, drive, 0, "TESTX", "TEST3");
     printf("RENAME RC=%X\n", rc);
-    rc = dos_catalog(6, 2);
+    rc = dos_catalog(6, 2, 0);
     printf("CATALOG RC=%X\n", rc);
     cgetc();
 }

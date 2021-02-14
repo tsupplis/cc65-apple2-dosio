@@ -23,13 +23,14 @@ void test1(void)
     printf("BUFFER=%p\n", buf);
     rc = dos_init(slot, 2, 254);
     printf("INIT(%d,%d) RC=%d\n", slot, drive, rc);
-    rc = dos_open(buf, slot, drive, "HELLO", DOS_FILE_TYPE_APPLESOFT, 0, DOS_OPEN_CREATE);
+    rc = dos_open(buf, slot, drive, 0, "HELLO", DOS_FILE_TYPE_APPLESOFT, 0, 
+        DOS_OPEN_CREATE);
     printf("OPEN RC=%X\n", rc);
     rc = dos_write_pos(buf, hello, sizeof(hello), 0, 0);
     printf("WRITE_POS RC=%X\n", rc);
     rc = dos_close(buf);
     printf("CLOSE RC=%X\n", rc);
-    rc = dos_catalog(6, 2);
+    rc = dos_catalog(6, 2, 0);
     printf("CATALOG RC=%X\n", rc);
     cgetc();
 }
