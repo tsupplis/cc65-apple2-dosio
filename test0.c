@@ -9,6 +9,7 @@
 
 void test0(void)
 {
+    printf("--------> Test 0\n");
     printf("DOS Check: %d\n",dos_check());
     if(dos_check()) {
         printf("DOS Version: %d\n",dos_version());
