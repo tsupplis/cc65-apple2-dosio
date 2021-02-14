@@ -25,6 +25,14 @@
 #define DOS_ERR_DISK_FULL 0x09
 #define DOS_ERR_FILE_LOCKED 0x0A
 
+#define DOS_DEFAULT_SLOT 0
+#define DOS_DEFAULT_DRIVE 0
+#define DOS_DEFAULT_VOLUME 0
+
+#define DOS_BASIC_INT 1
+#define DOS_BASIC_APPLESOFT 2
+#define DOS_BASIC_UNKNOWN 0
+
 typedef struct _dos_buffer_t
 {
     char data_sector[256];
@@ -52,25 +60,27 @@ dos_buffer_t *dos_get_buffer(void);
 
 char dos_last_slot();
 char dos_last_drive();
-int dos_check(void);
-int dos_version(void);
-int dos_catalog(char slot, char drive, unsigned char volume);
-int dos_open(dos_buffer_t *buffer, char slot, char drive, unsigned char volume, char *file, 
-    char type, unsigned int record_size, char creat);
-int dos_close(dos_buffer_t *buffer);
-int dos_delete(char slot, char drive, unsigned char volume, char *file);
-int dos_rename(char slot, char drive, unsigned char volume, char *file, char *new_name);
-int dos_lock(char slot, char drive, unsigned char volume, char *file);
-int dos_unlock(char slot, char drive, unsigned char volume, char *file);
-int dos_verify(char slot, char drive, unsigned char volume, char *file);
-int dos_init(char slot, char drive, unsigned char volume);
-int dos_write_byte(dos_buffer_t *buffer, char b);
-int dos_read_byte(dos_buffer_t *buffer, char *b);
-int dos_write(dos_buffer_t *buffer, char *b, unsigned int length);
-int dos_read(dos_buffer_t *buffer, char *b, unsigned int length);
-int dos_write_pos(dos_buffer_t *buffer, char *b, unsigned int length, unsigned int record, unsigned int offset);
-int dos_read_pos(dos_buffer_t *buffer, char *b, unsigned int length, unsigned int record, unsigned int offset);
-int dos_position(dos_buffer_t *buffer, unsigned int record, unsigned int offset);
+char dos_check(void);
+char dos_version(void);
+char dos_basic_version(void);
+
+char dos_catalog(char slot, char drive, unsigned char volume);
+char dos_open(dos_buffer_t *buffer, char slot, char drive, unsigned char volume, 
+    char *file, char type, unsigned int record_size, char creat);
+char dos_close(dos_buffer_t *buffer);
+char dos_delete(char slot, char drive, unsigned char volume, char *file);
+char dos_rename(char slot, char drive, unsigned char volume, char *file, char *new_name);
+char dos_lock(char slot, char drive, unsigned char volume, char *file);
+char dos_unlock(char slot, char drive, unsigned char volume, char *file);
+char dos_verify(char slot, char drive, unsigned char volume, char *file);
+char dos_init(char slot, char drive, unsigned char volume);
+char dos_write_byte(dos_buffer_t *buffer, char b);
+char dos_read_byte(dos_buffer_t *buffer, char *b);
+char dos_write(dos_buffer_t *buffer, char *b, unsigned int length);
+char dos_read(dos_buffer_t *buffer, char *b, unsigned int length);
+char dos_write_pos(dos_buffer_t *buffer, char *b, unsigned int length, unsigned int record, unsigned int offset);
+char dos_read_pos(dos_buffer_t *buffer, char *b, unsigned int length, unsigned int record, unsigned int offset);
+char dos_position(dos_buffer_t *buffer, unsigned int record, unsigned int offset);
 
 void dos_dump_buffers(void);
 
