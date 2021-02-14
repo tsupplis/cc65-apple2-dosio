@@ -30,7 +30,8 @@
 #define DOS_DEFAULT_VOLUME 0
 
 #define DOS_BASIC_INT 1
-#define DOS_BASIC_APPLESOFT 2
+#define DOS_BASIC_FPROM 2
+#define DOS_BASIC_FPRAM 3
 #define DOS_BASIC_UNKNOWN 0
 
 typedef struct _dos_buffer_t

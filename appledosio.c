@@ -79,6 +79,10 @@ typedef struct _fm_pcb_t
         p->data_sector_addr = b->data_sector_addr; \
     } while (0)
 
+#define ACTIVE_SLOT 0xAA6A
+#define ACTIVE_DRIVE 0xAA68
+#define BASIC_FLAG 0xAAB6
+
 static dos_buffer_t _dos_buffer[1];
 static char _default_drive=0;
 static char _default_slot=0;
@@ -86,7 +90,7 @@ static char _default_slot=0;
 char default_slot(char slot) {
     if(slot<1) {
         if(!_default_slot) {
-            _default_slot=PEEK(0xB7F7)/16;
+            _default_slot=PEEK(ACTIVE_SLOT);
         }
         return _default_slot;
     } 
@@ -99,7 +103,7 @@ char default_slot(char slot) {
 char default_drive(char drive) {
     if(drive<1) {
         if(!_default_drive) {
-            _default_drive=PEEK(0xB7F8);
+            _default_drive=PEEK(ACTIVE_DRIVE);
         }
         return _default_drive;
     } 
@@ -119,12 +123,15 @@ char dos_check(void)
 
 char dos_basic_version(void)
 {
-    char v=PEEK(0xAAB6);
+    char v=PEEK(BASIC_FLAG);
     if(v==1) {
-        return 1;
+        return DOS_BASIC_INT;
     }
     if(v==64) {
-        return 2;
+        return DOS_BASIC_FPROM;
+    }
+    if(v==128) {
+        return DOS_BASIC_FPRAM;
     }
     return 0;
 }
@@ -447,11 +454,11 @@ dos_buffer_t *dos_get_buffer(void)
 }
 
 char dos_last_slot() {
-    return PEEK(0xB7F7)/16;
+    return PEEK(ACTIVE_SLOT);
 }
 
 char dos_last_drive() {
-    return PEEK(0xB7F8);
+    return PEEK(ACTIVE_DRIVE);
 }
 
 char dos_default_slot() {
