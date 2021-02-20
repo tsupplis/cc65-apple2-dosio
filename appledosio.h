@@ -45,18 +45,7 @@ typedef struct _dos_buffer_t
     char *data_sector_addr;
     char *next_fn_addr;
 } dos_buffer_t;
-#define dos_buffer_next(p) (dos_buffer_t *)(p->next_fn_addr - offsetof(dos_buffer_t, file_name))
-#define dos_buffer_is_last(p) !(p->next_fn_addr)
-#define dos_buffer_first() (dos_buffer_t *)(*((int *)(((char *)0x3D2)[0] << 8)) - offsetof(dos_buffer_t, file_name))
-#define dos_buffer_is_free(p) (p->file_name[0] == 0)
-#define dos_buffer_reset(p)                   \
-    do                                        \
-    {                                         \
-        memset(p, 0, sizeof(dos_buffer_t));   \
-        p->list_sector_addr = p->list_sector; \
-        p->work_area_addr = p->work_area;     \
-        p->data_sector_addr = p->data_sector; \
-    } while (0)
+
 dos_buffer_t *dos_get_buffer(void);
 
 char dos_default_slot();
@@ -90,7 +79,5 @@ char dos_read(dos_buffer_t *buffer, char *b, unsigned int length);
 char dos_write_pos(dos_buffer_t *buffer, char *b, unsigned int length, unsigned int record, unsigned int offset);
 char dos_read_pos(dos_buffer_t *buffer, char *b, unsigned int length, unsigned int record, unsigned int offset);
 char dos_position(dos_buffer_t *buffer, unsigned int record, unsigned int offset);
-
-void dos_dump_buffers(void);
 
 #endif

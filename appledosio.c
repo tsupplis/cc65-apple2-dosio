@@ -89,6 +89,19 @@ typedef struct _fm_pcb_t
 #define MAXFILES 0xAA57 //43607
 #define DEFAULT_MAXFILES 0xAAB1 //43697
 
+#define dos_buffer_next(p) (dos_buffer_t *)(p->next_fn_addr - offsetof(dos_buffer_t, file_name))
+#define dos_buffer_is_last(p) !(p->next_fn_addr)
+#define dos_buffer_first() (dos_buffer_t *)(*((int *)(((char *)0x3D2)[0] << 8)) - offsetof(dos_buffer_t, file_name))
+#define dos_buffer_is_free(p) (p->file_name[0] == 0)
+#define dos_buffer_reset(p)                   \
+    do                                        \
+    {                                         \
+        memset(p, 0, sizeof(dos_buffer_t));   \
+        p->list_sector_addr = p->list_sector; \
+        p->work_area_addr = p->work_area;     \
+        p->data_sector_addr = p->data_sector; \
+    } while (0)
+
 static dos_buffer_t _dos_buffer[1];
 static char _default_drive=0;
 static char _default_slot=0;
@@ -174,7 +187,9 @@ static fm_pcb_t *dos_pcb()
 {
     static char _pcb_a;
     static char _pcb_y;
+    __asm__("bit $C082");
     __asm__("jsr $3DC");
+    __asm__("bit $C080");
     __asm__("sta %v", _pcb_a);
     __asm__("sty %v", _pcb_y);
     return (fm_pcb_t *)(((_pcb_a << 8) & 0xFF00) + (_pcb_y));
@@ -190,7 +205,9 @@ char dos_catalog(char slot, char drive, unsigned char volume)
     fm_pcb_drive(pcb) = default_drive(drive);
     fm_pcb_volume(pcb) = volume;
     fm_pcb_map_buffers(pcb, _dos_buffer);
+    __asm__("bit $C082");
     __asm__("jsr $3D6");
+    __asm__("bit $C080");
     return fm_pcb_return_code(pcb);
 }
 
@@ -248,7 +265,9 @@ char dos_open(dos_buffer_t *buffer, char slot, char drive, unsigned char volume,
     {
         __asm__("ldx #$1");
     }
+    __asm__("bit $C082");
     __asm__("jsr $3D6");
+    __asm__("bit $C080");
     return fm_pcb_return_code(pcb);
 }
 
@@ -263,7 +282,9 @@ char dos_delete(char slot, char drive, unsigned char volume, char *file)
     fm_pcb_file_name(pcb) = _dos_buffer->file_name;
     fm_pcb_map_buffers(pcb, _dos_buffer);
     _dos_copy_file_name(_dos_buffer->file_name, file);
+    __asm__("bit $C082");
     __asm__("jsr $3D6");
+    __asm__("bit $C080");
     return fm_pcb_return_code(pcb);
 }
 
@@ -282,7 +303,9 @@ char dos_rename(char slot, char drive, unsigned char volume, char *file, char *n
     fm_pcb_map_buffers(pcb, _dos_buffer);
     _dos_copy_file_name(_dos_buffer->file_name, file);
     _dos_copy_file_name(_dos_rename_name, new_name);
+    __asm__("bit $C082");
     __asm__("jsr $3D6");
+    __asm__("bit $C080");
     return fm_pcb_return_code(pcb);
 }
 
@@ -297,7 +320,9 @@ char dos_lock(char slot, char drive, unsigned char volume, char *file)
     fm_pcb_file_name(pcb) = _dos_buffer->file_name;
     fm_pcb_map_buffers(pcb, _dos_buffer);
     _dos_copy_file_name(_dos_buffer->file_name, file);
+    __asm__("bit $C082");
     __asm__("jsr $3D6");
+    __asm__("bit $C080");
     return fm_pcb_return_code(pcb);
 }
 
@@ -312,7 +337,9 @@ char dos_unlock(char slot, char drive, unsigned char volume, char *file)
     fm_pcb_file_name(pcb) = _dos_buffer->file_name;
     fm_pcb_map_buffers(pcb, _dos_buffer);
     _dos_copy_file_name(_dos_buffer->file_name, file);
+    __asm__("bit $C082");
     __asm__("jsr $3D6");
+    __asm__("bit $C080");
     return fm_pcb_return_code(pcb);
 }
 
@@ -327,7 +354,9 @@ char dos_verify(char slot, char drive, unsigned char volume, char *file)
     fm_pcb_file_name(pcb) = _dos_buffer->file_name;
     fm_pcb_map_buffers(pcb, _dos_buffer);
     _dos_copy_file_name(_dos_buffer->file_name, file);
+    __asm__("bit $C082");
     __asm__("jsr $3D6");
+    __asm__("bit $C080");
     return fm_pcb_return_code(pcb);
 }
 
@@ -342,7 +371,9 @@ char dos_init(char slot, char drive, unsigned char volume)
     fm_pcb_volume(pcb) = volume;
     _dos_copy_file_name(*fn, "HELLO");
     fm_pcb_map_buffers(pcb, _dos_buffer);
+    __asm__("bit $C082");
     __asm__("jsr $3D6");
+    __asm__("bit $C080");
     return fm_pcb_return_code(pcb);
 }
 
@@ -351,7 +382,9 @@ char dos_close(dos_buffer_t *buffer)
     fm_pcb_t *pcb = dos_pcb();
     fm_pcb_call_type(pcb) = DOS_CALL_CLOSE;
     fm_pcb_map_buffers(pcb, buffer);
+    __asm__("bit $C082");
     __asm__("jsr $3D6");
+    __asm__("bit $C080");
     buffer->file_name[0] = 0;
     return fm_pcb_return_code(pcb);
 }
@@ -363,7 +396,9 @@ char dos_write_byte(dos_buffer_t *buffer, char b)
     fm_pcb_subcall_type(pcb) = DOS_SUBCALL_RW1;
     fm_pcb_single_byte(pcb) = b;
     fm_pcb_map_buffers(pcb, buffer);
+    __asm__("bit $C082");
     __asm__("jsr $3D6");
+    __asm__("bit $C080");
     return fm_pcb_return_code(pcb);
 }
 
@@ -373,7 +408,9 @@ char dos_read_byte(dos_buffer_t *buffer, char *b)
     fm_pcb_call_type(pcb) = DOS_CALL_READ;
     fm_pcb_subcall_type(pcb) = DOS_SUBCALL_RW1;
     fm_pcb_map_buffers(pcb, buffer);
+    __asm__("bit $C082");
     __asm__("jsr $3D6");
+    __asm__("bit $C080");
     *b = fm_pcb_single_byte(pcb);
     return fm_pcb_return_code(pcb);
 }
@@ -390,7 +427,9 @@ char dos_write(dos_buffer_t *buffer, char *b, unsigned int length)
     fm_pcb_buffer_len(pcb) = length - 1; /* write length -1 */
     fm_pcb_buffer(pcb) = b;
     fm_pcb_map_buffers(pcb, buffer);
+    __asm__("bit $C082");
     __asm__("jsr $3D6");
+    __asm__("bit $C080");
     return fm_pcb_return_code(pcb);
 }
 
@@ -406,7 +445,9 @@ char dos_read(dos_buffer_t *buffer, char *b, unsigned int length)
     fm_pcb_buffer_len(pcb) = length;
     fm_pcb_buffer(pcb) = b;
     fm_pcb_map_buffers(pcb, buffer);
+    __asm__("bit $C082");
     __asm__("jsr $3D6");
+    __asm__("bit $C080");
     return fm_pcb_return_code(pcb);
 }
 
@@ -425,7 +466,9 @@ char dos_write_pos(dos_buffer_t *buffer, char *b, unsigned int length,
     fm_pcb_buffer_len(pcb) = length - 1; /* write length -1 */
     fm_pcb_buffer(pcb) = b;
     fm_pcb_map_buffers(pcb, buffer);
+    __asm__("bit $C082");
     __asm__("jsr $3D6");
+    __asm__("bit $C080");
     return fm_pcb_return_code(pcb);
 }
 
@@ -443,7 +486,9 @@ char dos_read_pos(dos_buffer_t *buffer, char *b, unsigned int length, unsigned i
     fm_pcb_buffer_len(pcb) = length;
     fm_pcb_buffer(pcb) = b;
     fm_pcb_map_buffers(pcb, buffer);
+    __asm__("bit $C082");
     __asm__("jsr $3D6");
+    __asm__("bit $C080");
     return fm_pcb_return_code(pcb);
 }
 
@@ -454,7 +499,9 @@ char dos_position(dos_buffer_t *buffer, unsigned int record, unsigned int offset
     fm_pcb_record(pcb) = record;
     fm_pcb_offset(pcb) = offset;
     fm_pcb_map_buffers(pcb, buffer);
+    __asm__("bit $C082");
     __asm__("jsr $3D6");
+    __asm__("bit $C080");
     return fm_pcb_return_code(pcb);
 }
 
