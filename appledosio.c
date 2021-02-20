@@ -79,13 +79,15 @@ typedef struct _fm_pcb_t
         p->data_sector_addr = b->data_sector_addr; \
     } while (0)
 
-#define BOOTSLOT 0x2B
+#define BOOT_SLOT 0x2B
 #define LAST_SLOT 0xB7F7 //47095
 #define LAST_DRIVE 0xB7F8 //47096
 #define ACTIVE_SLOT 0xAA6A //43626
 #define ACTIVE_DRIVE 0xAA68 //43624 
 #define BASIC_FLAG 0xAAB6
 #define CURRENT_SLOT
+#define MAXFILES 0xAA57 //43607
+#define DEFAULT_MAXFILES 0xAAB1 //43697
 
 static dos_buffer_t _dos_buffer[1];
 static char _default_drive=0;
@@ -492,4 +494,12 @@ char dos_default_slot() {
 
 char dos_default_drive() {
     return default_drive(0);
+}
+
+char dos_default_maxfiles() {
+    return PEEK(DEFAULT_MAXFILES);
+}
+
+char dos_maxfiles() {
+    return PEEK(MAXFILES);
 }

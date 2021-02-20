@@ -65,6 +65,10 @@ char dos_active_slot();
 char dos_active_drive();
 char dos_last_slot();
 char dos_last_drive();
+
+char dos_default_maxfiles();
+char dos_maxfiles();
+
 char dos_check(void);
 char dos_version(void);
 char dos_basic_version(void);

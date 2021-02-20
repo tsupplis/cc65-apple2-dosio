@@ -53,8 +53,14 @@ dos_buffer_t *dos_get_buffer(void);
 
 char dos_default_slot();
 char dos_default_drive();
+char dos_active_slot();
+char dos_active_drive();
 char dos_last_slot();
 char dos_last_drive();
+
+char dos_default_maxfiles();
+char dos_maxfiles();
+
 char dos_check(void);
 char dos_version(void);
 char dos_basic_version(void);
@@ -94,3 +100,8 @@ void dos_dump_buffers(void);
 - [ProntoDOS](https://mirrors.apple2.org.za/ftp.apple.asimov.net/images/masters/3rd_party_dos/) (1984/08)
 - [DiversiDOS](https://mirrors.apple2.org.za/ftp.apple.asimov.net/images/masters/3rd_party_dos/) (4.1c)
 - [DOS 3.4](https://brutaldeluxe.fr/projects/dos34/index.html) (2018/01)
+    Some Caveats (maxfiles and active_** call do not work)
+- DOS.3.3.Launcher 2.2 + DOS 3.3 and ProntoDOS
+
+*Warning* The API does not currently work with DOS.MASTER and corrupts the disk.
+
