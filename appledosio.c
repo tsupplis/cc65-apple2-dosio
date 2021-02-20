@@ -79,9 +79,13 @@ typedef struct _fm_pcb_t
         p->data_sector_addr = b->data_sector_addr; \
     } while (0)
 
-#define ACTIVE_SLOT 0xAA6A
-#define ACTIVE_DRIVE 0xAA68
+#define BOOTSLOT 0x2B
+#define LAST_SLOT 0xB7F7 //47095
+#define LAST_DRIVE 0xB7F8 //47096
+#define ACTIVE_SLOT 0xAA6A //43626
+#define ACTIVE_DRIVE 0xAA68 //43624 
 #define BASIC_FLAG 0xAAB6
+#define CURRENT_SLOT
 
 static dos_buffer_t _dos_buffer[1];
 static char _default_drive=0;
@@ -91,6 +95,12 @@ char default_slot(char slot) {
     if(slot<1) {
         if(!_default_slot) {
             _default_slot=PEEK(ACTIVE_SLOT);
+            if(!_default_slot) {
+                _default_slot=PEEK(LAST_SLOT)/16;
+            }
+            if(!_default_slot) {
+                _default_slot=6;
+            }
         }
         return _default_slot;
     } 
@@ -104,6 +114,12 @@ char default_drive(char drive) {
     if(drive<1) {
         if(!_default_drive) {
             _default_drive=PEEK(ACTIVE_DRIVE);
+            if(!_default_drive) {
+                _default_drive=PEEK(LAST_DRIVE);
+            }
+            if(!_default_drive) {
+                _default_drive=1;
+            }
         }
         return _default_drive;
     } 
@@ -171,7 +187,7 @@ char dos_catalog(char slot, char drive, unsigned char volume)
     fm_pcb_slot(pcb) = default_slot(slot);
     fm_pcb_drive(pcb) = default_drive(drive);
     fm_pcb_volume(pcb) = volume;
-    fm_pcb_work_area(pcb) = _dos_buffer->work_area;
+    fm_pcb_map_buffers(pcb, _dos_buffer);
     __asm__("jsr $3D6");
     return fm_pcb_return_code(pcb);
 }
@@ -323,7 +339,7 @@ char dos_init(char slot, char drive, unsigned char volume)
     fm_pcb_drive(pcb) = default_drive(drive);
     fm_pcb_volume(pcb) = volume;
     _dos_copy_file_name(*fn, "HELLO");
-    fm_pcb_work_area(pcb) = _dos_buffer->work_area;
+    fm_pcb_map_buffers(pcb, _dos_buffer);
     __asm__("jsr $3D6");
     return fm_pcb_return_code(pcb);
 }
@@ -455,10 +471,18 @@ dos_buffer_t *dos_get_buffer(void)
 }
 
 char dos_last_slot() {
-    return PEEK(ACTIVE_SLOT);
+    return PEEK(LAST_SLOT)/16;
 }
 
 char dos_last_drive() {
+    return PEEK(LAST_DRIVE);
+}
+
+char dos_active_slot() {
+    return PEEK(ACTIVE_SLOT);
+}
+
+char dos_active_drive() {
     return PEEK(ACTIVE_DRIVE);
 }
 
