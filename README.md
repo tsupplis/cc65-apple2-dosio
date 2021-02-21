@@ -1,5 +1,12 @@
 # CC65 Apple II DOS 3.3 I/O Library
 
+
+## *Warning* 
+The API is work in progress: The following functions are still not working
+
+- Multibyte Read/Write
+- File Rename
+
 ## Synopsis
 
 apple2-dosio is an experimental Apple 2 DOS 3.3 file access library. It closes a functional gap compared to ProDOS support in the CC65 Standard Library. It uses the DOS 3.3 File Manager API internally. We could imagine creating a specific implementation of the standard c library but for size and simplicity sake, it is its own API.
@@ -103,5 +110,4 @@ void dos_dump_buffers(void);
     Some Caveats (maxfiles and active_** call do not work)
 - DOS.3.3.Launcher 2.2 + DOS 3.3 and ProntoDOS
 
-*Warning* The API does not currently work with DOS.MASTER and corrupts the disk.
 
