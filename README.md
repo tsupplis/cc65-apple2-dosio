@@ -2,10 +2,9 @@
 
 
 ## *Warning* 
-The API is work in progress: The following functions are still not working
+The API is work in progress.
 
-- Multibyte Read/Write
-- File Rename
+Note: when `dos_open` creates a new file, the File Manager itself answers FILE NOT FOUND (6) although the file is open; `dos_open` reports `DOS_ERR_OK` in that case, as DOS's own OPEN and BSAVE commands do.
 
 ## Synopsis
 
