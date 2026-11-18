@@ -4,8 +4,8 @@ tell application "Virtual ]["
 	close every machine saving no
 	make new AppleIIe
 	set p to (path to me as text) & "::"
-	set disk0 to (POSIX path of p & "dosprog.dsk")
-	set disk1 to (POSIX path of p & "blank.dsk")
+	set disk0 to (POSIX path of p & "dosprog.do")
+	set disk1 to (POSIX path of p & "blank.do")
 	tell front machine
 		set speaker volume to 0.0
 		set caps lock to true

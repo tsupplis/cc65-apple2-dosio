@@ -9,7 +9,10 @@
 void test4(void)
 {
     dos_buffer_t *buf;
-    char hello[] = {0x0f, 0x00, 0x0e, 0x08, 0x0a, 0x00, 0xba, 0x22, 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x22, 0x00, 0x00, 0x00, 0xa2};
+    char phrase1[] = {'A'|0x80,'B'|0x80,'C'|0x80,'D'|0x80,'E'|0x80};
+    char phrase2[] = {'L'|0x80,'M'|0x80,'N'|0x80,'O'|0x80};
+    char phrase3[] = {'R'|0x80,'S'|0x80,'T'|0x80};
+    char phrase4[] = {'X'|0x80,'Y'|0x80};
     char slot = DOS_DEFAULT_SLOT;
     char drive = DOS_DEFAULT_DRIVE;
     int i = 0;
@@ -29,22 +32,22 @@ void test4(void)
     printf("OPEN RC=%X\n", rc);
     rc = dos_position(buf, 0, 0);
     printf("POSITION RC=%X\n", rc);
-    rc = dos_write(buf, "BOBON", 4);
-    printf("WRITE(BOBO) RC=%X\n", rc);
-    rc = dos_write(buf, "BABAN", 4);
-    printf("WRITE(BABA) RC=%X\n", rc);
-    rc = dos_write_pos(buf, "BIX", 2, 0, 4);
-    printf("WRITE_POS(BI) RC=%X\n", rc);
+    rc = dos_write(buf, phrase1, sizeof(phrase1));
+    printf("WRITE(Phrase1) RC=%X\n", rc);
+    rc = dos_write(buf, phrase2, sizeof(phrase2));
+    printf("WRITE(Phrase2) RC=%X\n", rc);
+    rc = dos_write_pos(buf, phrase3, sizeof(phrase3), 0, 4);
+    printf("WRITE_POS(Phrase3) RC=%X\n", rc);
     rc = dos_position(buf, 0, 0);
     printf("POSITION RC=%X\n", rc);
-    rc = dos_write(buf, "BIX", 2);
-    printf("WRITE(BI) RC=%X\n", rc);
+    rc = dos_write(buf, phrase4, sizeof(phrase4));
+    printf("WRITE(Phrase4) RC=%X\n", rc);
     rc = dos_close(buf);
     printf("CLOSE RC=%X\n", rc);
     //rc = dos_rename(slot, drive, 0, "TESTX", "TEST4");
     //printf("RENAME RC=%X\n", rc);
-    rc = dos_catalog(slot, drive, 0);
-    printf("CATALOG RC=%X\n", rc);
+    //rc = dos_catalog(slot, drive, 0);
+    //printf("CATALOG RC=%X\n", rc);
     printf("Test 4 Completed ... \nPress a Key to Continue ...\n");
     cgetc();
 }

@@ -9,6 +9,7 @@ void test1(void);
 void test2(void);
 void test3(void);
 void test4(void);
+void test5(void);
 
 int main()
 {
@@ -21,6 +22,14 @@ int main()
     test2();
     test3();
     test4();
+    test5();
+    printf("END\n");
+    test0();
+    test1();
+    test2();
+    test3();
+    test4();
+    test5();
     printf("END\n");
     return 0;
 }

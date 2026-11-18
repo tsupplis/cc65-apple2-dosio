@@ -23,6 +23,7 @@ void test0(void)
         printf("Default Slot: %d\n",dos_default_slot());
         printf("Default Drive: %d\n",dos_default_drive());
     }
+    printf("DOS Buffer Size %d\n",sizeof(dos_buffer_t));
     printf("Test 0 Completed ... \nPress a Key to Continue ...\n");
     cgetc();
 }
