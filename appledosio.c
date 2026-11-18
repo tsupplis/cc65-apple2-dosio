@@ -247,6 +247,7 @@ static void _dos_copy_file_name(char *a, char *b)
 char dos_open(dos_buffer_t *buffer, char slot, char drive, unsigned char volume, 
     char *file, char type, unsigned int record_size, char creat)
 {
+    char rc;
     fm_pcb_t *pcb = dos_pcb();
     fm_pcb_call_type(pcb) = DOS_CALL_OPEN;
     fm_pcb_record_size(pcb) = record_size;
@@ -268,7 +269,19 @@ char dos_open(dos_buffer_t *buffer, char slot, char drive, unsigned char volume,
     __asm__("bit $C082");
     __asm__("jsr $3D6");
     __asm__("bit $C080");
-    return fm_pcb_return_code(pcb);
+    rc = fm_pcb_return_code(pcb);
+    /* The File Manager answers FILE NOT FOUND when it creates the file: the
+       file is open all the same (DOS's own OPEN and BSAVE ignore it). */
+    if (creat && rc == DOS_ERR_FILE_NO_FOUND)
+    {
+        rc = DOS_ERR_OK;
+    }
+    /* A failed open must not keep the buffer marked as in use. */
+    if (rc != DOS_ERR_OK)
+    {
+        buffer->file_name[0] = 0;
+    }
+    return rc;
 }
 
 char dos_delete(char slot, char drive, unsigned char volume, char *file)
