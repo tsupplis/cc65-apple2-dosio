@@ -24,12 +24,5 @@ int main()
     test4();
     test5();
     printf("END\n");
-    test0();
-    test1();
-    test2();
-    test3();
-    test4();
-    test5();
-    printf("END\n");
     return 0;
 }

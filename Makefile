@@ -63,5 +63,8 @@ test5.o: test5.c appledosio.h
 
 appledosio.o: appledosio.c appledosio.h
 
+run: dosprog.do
+	./dosprog
+
 clean:
 	rm -f *.system *.bin *.prg *.o *.map blank.do dosprog.do *.[1-9]
