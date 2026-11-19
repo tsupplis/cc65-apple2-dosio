@@ -1,8 +1,9 @@
 DOS_VERSION=dos
 #DOS_VERSION=images/dos34_2018_01
 #DOS_VERSION=images/dos33_1983_08
-#DOS_VERSION=images/diversidos_4.1c
-DOS_VERSION=images/prontodos_1984_08
+DOS_VERSION=images/diversidos_4.1c
+#DOS_VERSION=images/prontodos_1984_08
+#DOS_VERSION=images/prontodos_v2.dsk
 #DOS_VERSION=images/davidos_1984
 APPLE_TYPE=apple2enh
 CC=cl65

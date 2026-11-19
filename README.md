@@ -115,26 +115,24 @@ Legend: ✅ pass · ❌ fail · ➖ N/A (feature not supported by this DOS)
 
 | Test | Focus | DOS 3.3 | DiversiDOS | DavidOS | DOS 3.4 | ProntoDOS |
 |------|-------|:-------:|:----------:|:-------:|:-------:|:---------:|
-| 1/11 `test_dosinfo`  | DOS presence, version, slot/drive | ✅ | ✅ | ✅ | ✅ ¹ | ✅ ² |
+| 1/11 `test_dosinfo`  | DOS presence, version, slot/drive | ✅ | ✅ | ✅ | ✅ ¹ | ✅ |
 | 2/11 `test_catalog`  | verify, rename, delete | ✅ | ✅ | ✅ | ✅ | ✅ |
 | 3/11 `test_lockfile` | lock, unlock, write-to-locked | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 4/11 `test_create`   | OPEN_CREATE new/existing, NOCREATE missing | ✅ | ✅ | ✅ | ✅ | ❌ ³ |
+| 4/11 `test_create`   | OPEN_CREATE new/existing, NOCREATE missing | ✅ | ✅ | ✅ | ✅ | ❌ ² |
 | 5/11 `test_rwbyte`   | write_byte / read_byte integrity | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 6/11 `test_rwblock`  | write / read block integrity (BINARY) | ✅ | ✅ | ✅ | ✅ | ❌ ⁴ |
-| 7/11 `test_textio`   | text lines write/read/visual | ✅ | ✅ | ✅ | ✅ | ❌ ⁴ |
-| 8/11 `test_position` | write_pos, read_pos, position | ✅ | ✅ | ✅ | ✅ | ❌ ⁴ |
-| 9/11 `test_stress`   | 100-record sequential write/read | ✅ | ✅ | ✅ | ✅ | ❌ ⁴ |
-| 10/11 `test_eod`     | read past end of file | ✅ | ✅ | ✅ | ✅ | ❌ ⁴ |
-| 11/11 `test_multifile` | two files open simultaneously | ✅ | ✅ | ✅ | ✅ | ❌ ⁴ |
+| 6/11 `test_rwblock`  | write / read block integrity (BINARY) | ✅ | ✅ | ✅ | ✅ | ❌ ³ |
+| 7/11 `test_textio`   | text lines write/read/visual | ✅ | ✅ | ✅ | ✅ | ❌ ³ |
+| 8/11 `test_position` | write_pos, read_pos, position | ✅ | ✅ | ✅ | ✅ | ❌ ³ |
+| 9/11 `test_stress`   | 100-record sequential write/read | ✅ | ✅ | ✅ | ✅ | ❌ ³ |
+| 10/11 `test_eod`     | read past end of file | ✅ | ✅ | ✅ | ✅ | ❌ ³ |
+| 11/11 `test_multifile` | two files open simultaneously | ✅ | ✅ | ✅ | ✅ | ❌ ³ |
 
 **Notes**
 
-¹ DOS 3.4: `dos_version()`, `dos_basic_version()`, `dos_maxfiles()` return 0 / garbage — zero-page offsets differ from DOS 3.3. `dos_check()`, slot and drive accessors work correctly.
+¹ DOS 3.4: `dos_version()`, `dos_basic_version()`, `dos_maxfiles()`, `dos_active_slot()`, `dos_active_drive()` return 0 or garbage. Memory scan confirms the DOS workspace is no longer at `$AA00` — DOS 3.4 reorganised its OS code into `$1D00–$35FF` and the metadata fields moved to undocumented addresses. `dos_check()` (`$3D0=4C`), `dos_default_slot()` and `dos_default_drive()` work correctly because they fall back to `$B7F7`/`$B7F8` (LAST_SLOT/LAST_DRIVE) which are unchanged.
 
-² ProntoDOS: version and maxfiles accessors return garbage (`mf=A0`), indicating incompatible zero-page layout for those fields.
+² ProntoDOS / `test_create`: `DOS_OPEN_CREATE` on an existing file does not delete or truncate it first — the write goes to position 0 but the old sector content is returned on re-read. This may be related to the File Manager incompatibility described in note ³.
 
-³ ProntoDOS: `dos_open` with `DOS_OPEN_CREATE` on an existing file does not delete/truncate the file first. The new data is written at position 0, but on re-read the old sector content is returned — the write appears not to persist. The read returns `C1 C2 C3 00` (original data, with last byte `00` due to note ⁴) instead of the expected `D8 D9 DA 8D` (overwrite data). Whether this is a write-caching issue or a sector allocation bug in ProntoDOS requires further investigation.
-
-⁴ ProntoDOS: `dos_read_byte` does not advance the file position on the last byte of a sector — the final byte of any read sequence is always returned as `0x00`. This causes all block-read integrity checks to fail. Root cause is probably a bug in the ProntoDOS File Manager implementation.
+³ ProntoDOS — **documented File Manager incompatibility** (ProntoDOS manual, p.17, Tom Weishaar): ProntoDOS deliberately changes the semantics of the File Manager range read/write operations (`DOS_SUBCALL_RWN`, `DOS_SUBCALL_PRWN`). Specifically: range routines do not report EOF errors, and do not maintain random-access file position correctly. This library calls the File Manager directly through `$3D6` and is therefore in the affected path. Tests 6–11 all use range operations and fail consistently. `test_rwbyte` (single-byte operations, `DOS_SUBCALL_RW1`) passes because ProntoDOS does not alter single-byte read/write behaviour. The last-byte-of-sector `0x00` corruption and the `test_create` overwrite failure may be related symptoms of the same underlying changes, though this has not been confirmed from source.
 
 
