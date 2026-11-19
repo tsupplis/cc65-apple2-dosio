@@ -212,7 +212,9 @@ char dos_catalog(char slot, char drive, unsigned char volume)
     return fm_pcb_return_code(pcb);
 }
 
-void dos_dump_buffers()
+/* Walk the DOS buffer chain and print each entry's addresses and
+   raw filename bytes.  Useful for debugging open-file state. */
+void dos_dump_buffers(void)
 {
     dos_buffer_t *p = dos_buffer_first();
     while (1)
