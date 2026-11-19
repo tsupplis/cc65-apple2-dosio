@@ -1,10 +1,10 @@
 DOS_VERSION=dos
 #DOS_VERSION=images/dos34_2018_01
-#DOS_VERSION=images/dos33_1983_08
+DOS_VERSION=images/dos33_1983_08
 #DOS_VERSION=images/diversidos_4.1c
-DOS_VERSION=images/prontodos_1984_08
+#DOS_VERSION=images/prontodos_1984_08
 #DOS_VERSION=images/davidos_1984
-APPLE_TYPE=apple2
+APPLE_TYPE=apple2enh
 CC=cl65
 AS=ca65
 ACMD=java -jar acmd.jar
@@ -17,7 +17,6 @@ all: test.bin minicat.bin disks
 
 .PHONY: test
 test: test.bin
-
 
 disks: dosprog.do blank.do
 
@@ -47,23 +46,42 @@ dosprog.do: test.bin minicat.bin \
 minicat.bin: minicat.o appledosio.o dump.o
 	$(LD) $(LDFLAGS) -o $@ -m $@.map $^
 
-test.bin: test.o test0.o test1.o test2.o test3.o test4.o test5.o appledosio.o dump.o
+TEST_OBJS = test.o \
+            test_dosinfo.o \
+            test_catalog.o \
+            test_lockfile.o \
+            test_create.o \
+            test_rwbyte.o \
+            test_rwblock.o \
+            test_textio.o \
+            test_position.o \
+            test_stress.o \
+            test_eod.o \
+            test_multifile.o \
+            appledosio.o dump.o
+
+test.bin: $(TEST_OBJS)
 	$(LD) $(LDFLAGS) -o $@ -m $@.map $^
 
 dump.o: dump.c
 
 minicat.o: minicat.c appledosio.h
-test.o: test.c appledosio.h
-test0.o: test0.c appledosio.h
-test1.o: test1.c appledosio.h
-test2.o: test2.c appledosio.h
-test3.o: test3.c appledosio.h
-test4.o: test4.c appledosio.h
-test5.o: test5.c appledosio.h
+test.o:          test.c          appledosio.h testutil.h
+test_dosinfo.o:  test_dosinfo.c  appledosio.h testutil.h
+test_catalog.o:  test_catalog.c  appledosio.h testutil.h
+test_lockfile.o: test_lockfile.c appledosio.h testutil.h
+test_create.o:   test_create.c   appledosio.h testutil.h
+test_rwbyte.o:   test_rwbyte.c   appledosio.h testutil.h
+test_rwblock.o:  test_rwblock.c  appledosio.h testutil.h
+test_textio.o:   test_textio.c   appledosio.h testutil.h
+test_position.o:  test_position.c  appledosio.h testutil.h
+test_stress.o:    test_stress.c    appledosio.h testutil.h
+test_eod.o:       test_eod.c       appledosio.h testutil.h
+test_multifile.o: test_multifile.c appledosio.h testutil.h
 
 appledosio.o: appledosio.c appledosio.h
 
-run: dosprog.do
+run: dosprog.do blank.do
 	./dosprog
 
 clean:
