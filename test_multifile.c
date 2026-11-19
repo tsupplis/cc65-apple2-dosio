@@ -5,6 +5,8 @@
 #include "appledosio.h"
 #include "testutil.h"
 
+static char read_exact(dos_buffer_t *buf, char *dst, unsigned int len) { unsigned int i; char rc; for(i=0;i<len;i++){rc=dos_read_byte(buf,dst+i);if(rc!=DOS_ERR_OK)return rc;} return DOS_ERR_OK; }
+
 static int t_pass, t_fail;
 
 static char data1[8] = {
@@ -61,13 +63,13 @@ int test_multifile(void)
                   DOS_FILE_TYPE_BINARY, 0, DOS_OPEN_NOCREATE);
     CHECK("open TMULTI2 read",  rc == DOS_ERR_OK);
 
-    rc = dos_read(buf1, r1, DLEN);
+    rc = read_exact(buf1, r1, DLEN);
     CHECK("read TMULTI1",       rc == DOS_ERR_OK);
-    rc = dos_read(buf2, r2, DLEN);
+    rc = read_exact(buf2, r2, DLEN);
     CHECK("read TMULTI2",       rc == DOS_ERR_OK);
 
-    CHECK("TMULTI1 data match", memcmp(r1, data1, DLEN) == 0);
-    CHECK("TMULTI2 data match", memcmp(r2, data2, DLEN) == 0);
+    CHECK_MEM("TMULTI1 data match", r1, data1, DLEN);
+    CHECK_MEM("TMULTI2 data match", r2, data2, DLEN);
 
     rc = dos_close(buf1);
     CHECK("close TMULTI1 read", rc == DOS_ERR_OK);

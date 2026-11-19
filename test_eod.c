@@ -5,6 +5,8 @@
 #include "appledosio.h"
 #include "testutil.h"
 
+static char read_exact(dos_buffer_t *buf, char *dst, unsigned int len) { unsigned int i; char rc; for(i=0;i<len;i++){rc=dos_read_byte(buf,dst+i);if(rc!=DOS_ERR_OK)return rc;} return DOS_ERR_OK; }
+
 static int t_pass, t_fail;
 
 #define DATA_LEN 6
@@ -40,9 +42,9 @@ int test_eod(void)
     rc = dos_open(buf, slot, drive, DOS_DEFAULT_VOLUME, "TEOD",
                   DOS_FILE_TYPE_BINARY, 0, DOS_OPEN_NOCREATE);
     CHECK("open for read",     rc == DOS_ERR_OK);
-    rc = dos_read(buf, rdata, DATA_LEN);
+    rc = read_exact(buf, rdata, DATA_LEN);
     CHECK("read exact",        rc == DOS_ERR_OK);
-    CHECK("data intact",       memcmp(rdata, wdata, DATA_LEN) == 0);
+    CHECK_MEM("data intact",   rdata, wdata, DATA_LEN);
     /* Note: ProntoDOS read_byte returns OK past EOF on binary files */
     rc = dos_close(buf);
     CHECK("close read",        rc == DOS_ERR_OK);

@@ -5,6 +5,8 @@
 #include "appledosio.h"
 #include "testutil.h"
 
+static char read_exact(dos_buffer_t *buf, char *dst, unsigned int len) { unsigned int i; char rc; for(i=0;i<len;i++){rc=dos_read_byte(buf,dst+i);if(rc!=DOS_ERR_OK)return rc;} return DOS_ERR_OK; }
+
 static int t_pass, t_fail;
 
 int test_position(void)
@@ -43,10 +45,10 @@ int test_position(void)
     CHECK("open for read",        rc == DOS_ERR_OK);
     rc = dos_read_pos(buf, rbuf, 10, 0, 0);
     CHECK("read_pos offset 0",    rc == DOS_ERR_OK);
-    CHECK("rec0 data match",      memcmp(rec0, rbuf, 10) == 0);
+    CHECK_MEM("rec0 data match",  rbuf, rec0, 10);
     rc = dos_read_pos(buf, rbuf, 10, 0, 10);
     CHECK("read_pos offset 10",   rc == DOS_ERR_OK);
-    CHECK("rec1 data match",      memcmp(rec1, rbuf, 10) == 0);
+    CHECK_MEM("rec1 data match",  rbuf, rec1, 10);
     rc = dos_close(buf);
     CHECK("close after read",     rc == DOS_ERR_OK);
 
@@ -65,7 +67,8 @@ int test_position(void)
                   DOS_FILE_TYPE_BINARY, 0, DOS_OPEN_NOCREATE);
     CHECK("open verify",          rc == DOS_ERR_OK);
     rc = dos_read_pos(buf, rbuf, 10, 0, 0);
-    CHECK("overwrite match",      rc == DOS_ERR_OK && memcmp(rec1, rbuf, 10) == 0);
+    CHECK("overwrite read ok",    rc == DOS_ERR_OK);
+    CHECK_MEM("overwrite match",  rbuf, rec1, 10);
     rc = dos_close(buf);
     CHECK("close verify",         rc == DOS_ERR_OK);
 

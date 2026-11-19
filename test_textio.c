@@ -5,6 +5,8 @@
 #include "appledosio.h"
 #include "testutil.h"
 
+static char read_exact(dos_buffer_t *buf, char *dst, unsigned int len) { unsigned int i; char rc; for(i=0;i<len;i++){rc=dos_read_byte(buf,dst+i);if(rc!=DOS_ERR_OK)return rc;} return DOS_ERR_OK; }
+
 static int t_pass, t_fail;
 
 /* Apple II text: printable chars have bit 7 set, line end = 0x8D */
@@ -37,7 +39,6 @@ int test_textio(void)
     char rbuf[TOTAL_LEN];
     char rc;
     unsigned int j;
-    int mismatches;
 
     t_pass = 0; t_fail = 0;
     clrscr();
@@ -63,31 +64,24 @@ int test_textio(void)
     rc = dos_open(buf, slot, drive, DOS_DEFAULT_VOLUME, "TTEXTIO",
                   DOS_FILE_TYPE_TEXT, 0, DOS_OPEN_NOCREATE);
     CHECK("open for read",   rc == DOS_ERR_OK);
-    rc = dos_read(buf, rbuf, TOTAL_LEN);
+    rc = read_exact(buf, rbuf, TOTAL_LEN);
     CHECK("read all lines",  rc == DOS_ERR_OK);
     rc = dos_close(buf);
     CHECK("close read",      rc == DOS_ERR_OK);
 
-    mismatches = 0;
-    for (j = 0; j < TOTAL_LEN; j++)
-        if (rbuf[j] != line1[j < LINE1_LEN ? j :
-                       j < LINE1_LEN+LINE2_LEN ? j :j]) mismatches++;
-    /* simpler: compare against reconstructed expected */
     {
         char expected[TOTAL_LEN];
-        memcpy(expected,              line1, LINE1_LEN);
-        memcpy(expected+LINE1_LEN,    line2, LINE2_LEN);
-        memcpy(expected+LINE1_LEN+LINE2_LEN, line3, LINE3_LEN);
-        mismatches = memcmp(rbuf, expected, TOTAL_LEN);
+        memcpy(expected,                         line1, LINE1_LEN);
+        memcpy(expected+LINE1_LEN,               line2, LINE2_LEN);
+        memcpy(expected+LINE1_LEN+LINE2_LEN,     line3, LINE3_LEN);
+        CHECK_MEM("data roundtrip", rbuf, expected, TOTAL_LEN);
     }
-    CHECK("data roundtrip", mismatches == 0);
 
-    /* --- visual display: strip bit 7 and print --- */
+    /* --- visual display: strip bit 7, 0x8D -> newline --- */
     printf("--- visual check ---\n");
     for (j = 0; j < TOTAL_LEN; j++) {
-        char c = rbuf[j] & 0x7F;
-        if (c == 0x0D) putchar('\n');
-        else           putchar(c);
+        if ((unsigned char)rbuf[j] == 0x8D) printf("\n");
+        else                                putchar(rbuf[j] & 0x7F);
     }
 
     dos_delete(slot, drive, DOS_DEFAULT_VOLUME, "TTEXTIO");

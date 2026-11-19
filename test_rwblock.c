@@ -5,6 +5,8 @@
 #include "appledosio.h"
 #include "testutil.h"
 
+static char read_exact(dos_buffer_t *buf, char *dst, unsigned int len) { unsigned int i; char rc; for(i=0;i<len;i++){rc=dos_read_byte(buf,dst+i);if(rc!=DOS_ERR_OK)return rc;} return DOS_ERR_OK; }
+
 static int t_pass, t_fail;
 
 static char wbuf[16] = {
@@ -42,9 +44,9 @@ int test_rwblock(void)
     rc = dos_open(buf, slot, drive, DOS_DEFAULT_VOLUME, "TRWBLK",
                   DOS_FILE_TYPE_BINARY, 0, DOS_OPEN_NOCREATE);
     CHECK("open for read",         rc == DOS_ERR_OK);
-    rc = dos_read(buf, rbuf, WBUF_LEN);
+    rc = read_exact(buf, rbuf, WBUF_LEN);
     CHECK("read block",            rc == DOS_ERR_OK);
-    CHECK("block data match",      memcmp(wbuf, rbuf, WBUF_LEN) == 0);
+    CHECK_MEM("block data match",  rbuf, wbuf, WBUF_LEN);
     rc = dos_close(buf);
     CHECK("close after read",      rc == DOS_ERR_OK);
 
@@ -62,9 +64,9 @@ int test_rwblock(void)
     rc = dos_open(buf, slot, drive, DOS_DEFAULT_VOLUME, "TRWBLK2",
                   DOS_FILE_TYPE_BINARY, 0, DOS_OPEN_NOCREATE);
     CHECK("open TRWBLK2 read",     rc == DOS_ERR_OK);
-    rc = dos_read(buf, rbuf, WBUF_LEN);
+    rc = read_exact(buf, rbuf, WBUF_LEN);
     CHECK("read joined block",     rc == DOS_ERR_OK);
-    CHECK("joined data match",     memcmp(wbuf, rbuf, WBUF_LEN) == 0);
+    CHECK_MEM("joined data match", rbuf, wbuf, WBUF_LEN);
     rc = dos_close(buf);
     CHECK("close TRWBLK2 read",    rc == DOS_ERR_OK);
 

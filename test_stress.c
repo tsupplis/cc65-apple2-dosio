@@ -4,6 +4,8 @@
 #include "appledosio.h"
 #include "testutil.h"
 
+static char read_exact(dos_buffer_t *buf, char *dst, unsigned int len) { unsigned int i; char rc; for(i=0;i<len;i++){rc=dos_read_byte(buf,dst+i);if(rc!=DOS_ERR_OK)return rc;} return DOS_ERR_OK; }
+
 static int t_pass, t_fail;
 
 #define ITERATIONS 100
@@ -52,10 +54,18 @@ int test_stress(void)
     for (iter = 0; iter < ITERATIONS; iter++) {
         for (i = 0; i < DATA_LEN; i++)
             wdata[i] = (char)((iter + i) & 0xFF);
-        rc = dos_read(buf, rdata, DATA_LEN);
+        rc = read_exact(buf, rdata, DATA_LEN);
         if (rc != DOS_ERR_OK) { read_fails++; continue; }
-        for (i = 0; i < DATA_LEN; i++)
-            if (rdata[i] != wdata[i]) { read_fails++; break; }
+        for (i = 0; i < DATA_LEN; i++) {
+            if (rdata[i] != wdata[i]) {
+                if (read_fails == 0) {   /* dump only first mismatch */
+                    HEXDUMP("exp", wdata, DATA_LEN);
+                    HEXDUMP("got", rdata, DATA_LEN);
+                }
+                read_fails++;
+                break;
+            }
+        }
         if ((iter % 10) == 9) printf("r");
     }
     printf("\n");

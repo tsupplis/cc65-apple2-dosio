@@ -102,11 +102,39 @@ void dos_dump_buffers(void);
 
 ## Versions of DOS tested against
 
-- [DOS 3.3](https://mirrors.apple2.org.za/ftp.apple.asimov.net/images/masters/) (1980/08, 1983/01, 1983/08 ...) 
+- [DOS 3.3](https://mirrors.apple2.org.za/ftp.apple.asimov.net/images/masters/) (1980/08, 1983/01, 1983/08 ...)
 - [ProntoDOS](https://mirrors.apple2.org.za/ftp.apple.asimov.net/images/masters/3rd_party_dos/) (1984/08)
 - [DiversiDOS](https://mirrors.apple2.org.za/ftp.apple.asimov.net/images/masters/3rd_party_dos/) (4.1c)
 - [DOS 3.4](https://brutaldeluxe.fr/projects/dos34/index.html) (2018/01)
     Some Caveats (maxfiles and active_** call do not work)
 - DOS.3.3.Launcher 2.2 + DOS 3.3 and ProntoDOS
+
+## Test Compatibility Matrix
+
+Legend: ✅ pass · ❌ fail · ➖ N/A (feature not supported by this DOS)
+
+| Test | Focus | DOS 3.3 | DiversiDOS | DavidOS | DOS 3.4 | ProntoDOS |
+|------|-------|:-------:|:----------:|:-------:|:-------:|:---------:|
+| 1/11 `test_dosinfo`  | DOS presence, version, slot/drive | ✅ | ✅ | ✅ | ✅ ¹ | ✅ ² |
+| 2/11 `test_catalog`  | verify, rename, delete | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 3/11 `test_lockfile` | lock, unlock, write-to-locked | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 4/11 `test_create`   | OPEN_CREATE new/existing, NOCREATE missing | ✅ | ✅ | ✅ | ✅ | ❌ ³ |
+| 5/11 `test_rwbyte`   | write_byte / read_byte integrity | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 6/11 `test_rwblock`  | write / read block integrity (BINARY) | ✅ | ✅ | ✅ | ✅ | ❌ ⁴ |
+| 7/11 `test_textio`   | text lines write/read/visual | ✅ | ✅ | ✅ | ✅ | ❌ ⁴ |
+| 8/11 `test_position` | write_pos, read_pos, position | ✅ | ✅ | ✅ | ✅ | ❌ ⁴ |
+| 9/11 `test_stress`   | 100-record sequential write/read | ✅ | ✅ | ✅ | ✅ | ❌ ⁴ |
+| 10/11 `test_eod`     | read past end of file | ✅ | ✅ | ✅ | ✅ | ❌ ⁴ |
+| 11/11 `test_multifile` | two files open simultaneously | ✅ | ✅ | ✅ | ✅ | ❌ ⁴ |
+
+**Notes**
+
+¹ DOS 3.4: `dos_version()`, `dos_basic_version()`, `dos_maxfiles()` return 0 / garbage — zero-page offsets differ from DOS 3.3. `dos_check()`, slot and drive accessors work correctly.
+
+² ProntoDOS: version and maxfiles accessors return garbage (`mf=A0`), indicating incompatible zero-page layout for those fields.
+
+³ ProntoDOS: `dos_open` with `DOS_OPEN_CREATE` on an existing file does not delete/truncate the file first. The new data is written at position 0, but on re-read the old sector content is returned — the write appears not to persist. The read returns `C1 C2 C3 00` (original data, with last byte `00` due to note ⁴) instead of the expected `D8 D9 DA 8D` (overwrite data). Whether this is a write-caching issue or a sector allocation bug in ProntoDOS requires further investigation.
+
+⁴ ProntoDOS: `dos_read_byte` does not advance the file position on the last byte of a sector — the final byte of any read sequence is always returned as `0x00`. This causes all block-read integrity checks to fail. Root cause is probably a bug in the ProntoDOS File Manager implementation.
 
 

@@ -5,6 +5,8 @@
 #include "appledosio.h"
 #include "testutil.h"
 
+static char read_exact(dos_buffer_t *buf, char *dst, unsigned int len) { unsigned int i; char rc; for(i=0;i<len;i++){rc=dos_read_byte(buf,dst+i);if(rc!=DOS_ERR_OK)return rc;} return DOS_ERR_OK; }
+
 static int t_pass, t_fail;
 
 int test_create(void)
@@ -56,9 +58,9 @@ int test_create(void)
     rc = dos_open(buf, slot, drive, DOS_DEFAULT_VOLUME, "TCREAT",
                   DOS_FILE_TYPE_TEXT, 0, DOS_OPEN_NOCREATE);
     CHECK("open after overwrite",  rc == DOS_ERR_OK);
-    rc = dos_read(buf, rdata, sizeof(rdata));
+    rc = read_exact(buf, rdata, sizeof(rdata));
     CHECK("read overwrite",        rc == DOS_ERR_OK);
-    CHECK("overwrite data match",  memcmp(rdata, wdata2, sizeof(wdata2)) == 0);
+    CHECK_MEM("overwrite data match", rdata, wdata2, sizeof(wdata2));
     rc = dos_close(buf);
     CHECK("close read",            rc == DOS_ERR_OK);
 
